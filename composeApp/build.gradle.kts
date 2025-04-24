@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-
 //    id("org.jetbrains.kotlin.plugin.compose")
 //    kotlin("plugin.serialization") version "1.9.0"
 }
@@ -45,6 +44,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.ui)
+            implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
@@ -53,14 +53,12 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
-
             implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
             implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
             implementation("net.sourceforge.tess4j:tess4j:5.8.0")  // Tesseract OCR for Java
             implementation("org.slf4j:slf4j-simple:2.0.12")      // Required by Tess4J
             implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
             implementation("org.apache.pdfbox:pdfbox:2.0.27")// For PDF files
-            implementation(compose.material) // For fallback if needed
             implementation("org.apache.commons:commons-io:1.3.2")
             implementation("com.squareup.okhttp3:okhttp:4.9.3") // For making API calls
             implementation("org.json:json:20231013")

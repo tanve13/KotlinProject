@@ -6,23 +6,52 @@ import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,38 +59,45 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
-import com.vanshika.multiplatformproject.com.vanshika.multiplatformproject.AuthScreen
+import com.tanveer.kotlinproject.saveEvaluationToFireStore
 import io.ktor.utils.io.core.use
-import kotlinx.coroutines.launch
 import net.sourceforge.tess4j.Tesseract
 import net.sourceforge.tess4j.TesseractException
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDResources
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.apache.pdfbox.rendering.PDFRenderer
 import org.apache.pdfbox.text.PDFTextStripper
-import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.tika.Tika
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay  // THIS IS THE CRITICAL MISSING IMPORT
 import org.json.JSONArray
 import org.json.JSONObject
 import java.awt.Desktop
 import java.awt.FileDialog
 import java.awt.Frame
-import java.awt.image.BufferedImage
-import java.io.*
-import java.sql.DriverManager.println
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.sql.DriverManager
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
+import javax.swing.UIManager
 import javax.swing.UIManager.put
-import kotlinx.coroutines.delay  // THIS IS THE CRITICAL MISSING IMPORT
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+
+
 
 @Composable
 @Preview
@@ -93,10 +129,14 @@ fun App(
 
     MaterialTheme {
         Column(
-            modifier = Modifier.fillMaxSize().background(Color(0xFFADD8E6)).padding(16.dp)
+            modifier = Modifier.fillMaxSize().background(
+                androidx.compose.ui.graphics.Color(
+                    0xFFADD8E6
+                )
+            ).padding(16.dp)
         ) {
             TopAppBar(
-                backgroundColor = Color(0xFF3B83BD), contentColor = Color.White
+                backgroundColor = androidx.compose.ui.graphics.Color(0xFF3B83BD), contentColor = Color.White
             ) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Text(
@@ -131,7 +171,10 @@ fun App(
                                 }
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6200EA)),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = androidx.compose.ui.graphics.Color(
+                            0xFF6200EA
+                        )
+                        ),
                     ) {
                         Text(text = label, color = Color.White)
                     }
@@ -139,7 +182,10 @@ fun App(
 
                 Button(
                     onClick = { showDialog = true },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFD4A017))
+                    colors = ButtonDefaults.buttonColors(backgroundColor = androidx.compose.ui.graphics.Color(
+                        0xFFD4A017
+                    )
+                    )
                 ) {
                     Text("Show Selected Files", color = Color.White)
                 }
@@ -166,7 +212,10 @@ fun App(
 
                     """
                     },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = androidx.compose.ui.graphics.Color(
+                        0xFFFF0000
+                    )
+                    ),
                     modifier = Modifier.height(48.dp),
                     enabled = !isLoading && selectedFiles.contains("Answer Sheet") && selectedFiles.contains(
                         "Rubric"
@@ -329,7 +378,10 @@ fun App(
                             }
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4CAF50)),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = androidx.compose.ui.graphics.Color(
+                        0xFF4CAF50
+                    )
+                    ),
                     modifier = Modifier.height(48.dp)
                 ) {
                     Text("Save to Firebase", color = Color.White)
@@ -456,7 +508,7 @@ fun App(
                                 .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
                             elevation = 4.dp,
                             shape = RoundedCornerShape(16.dp),
-                            backgroundColor = Color(0xFFE3F2FD) // Light blue background
+                            backgroundColor = androidx.compose.ui.graphics.Color(0xFFE3F2FD) // Light blue background
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp).fillMaxWidth(),
@@ -520,7 +572,7 @@ fun App(
                                     DisplayFeedback(
                                         JSONObject(feedbackContent!!),
                                         onConfirmAll = { confirmedScores ->
-                                            println("Confirmed Scores: $confirmedScores")
+                                            DriverManager.println("Confirmed Scores: $confirmedScores")
                                         })
                                 }
                             }
@@ -589,7 +641,7 @@ fun DisplayFeedback(
                     // Trigger final callback
                     onConfirmAll(sectionScores)
                 }, colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color(0xFF4CAF50), // Green
+                    backgroundColor = androidx.compose.ui.graphics.Color(0xFF4CAF50), // Green
                     contentColor = Color.White
                 )
             ) {
@@ -601,7 +653,7 @@ fun DisplayFeedback(
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 "✅ Strengths:", fontWeight = FontWeight.Bold,
-                color = Color(0xFF0D47A1) // ✅ Darker Blue Text for better contrast
+                color = androidx.compose.ui.graphics.Color(0xFF0D47A1) // ✅ Darker Blue Text for better contrast
             )
             jsonResponse.optJSONArray("strengths")?.let {
                 for (i in 0 until it.length()) {
@@ -640,7 +692,10 @@ fun DisplayFeedback(
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(8.dp),
                         shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+                        colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(
+                            0xFFE3F2FD
+                        )
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -688,8 +743,12 @@ fun DisplayFeedback(
                                     enabled = isEditing,
                                     modifier = Modifier.weight(1f),
                                     colors = SliderDefaults.colors(
-                                        thumbColor = if (isEditing) Color(0xFF7B1FA2) else Color.Gray,
-                                        activeTrackColor = Color(0xFF7B1FA2),
+                                        thumbColor = if (isEditing) androidx.compose.ui.graphics.Color(
+                                            0xFF7B1FA2
+                                        ) else Color.Gray,
+                                        activeTrackColor = androidx.compose.ui.graphics.Color(
+                                            0xFF7B1FA2
+                                        ),
                                         inactiveTrackColor = Color.LightGray.copy(alpha = 0.4f)
                                     )
                                 )
@@ -744,7 +803,6 @@ fun DisplayFeedback(
         }
     }
 }
-
 fun evaluateAnswerSheet(
     answerSheet: String,
     rubric: String,
@@ -858,7 +916,6 @@ fun evaluateAnswerSheet(
         }
     })
 }
-
 fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: String): String {
     return """
         ROLE: Expert academic evaluator with extensive experience in assessment.
@@ -942,7 +999,7 @@ fun readPdfContent(file: File): String {
             val text = try {
                 stripper.getText(doc).trim()
             } catch (e: Exception) {
-                println("Warning: Unable to extract full text - ${e.message}")
+                DriverManager.println("Warning: Unable to extract full text - ${e.message}")
                 ""
             }
 
@@ -956,7 +1013,7 @@ fun readPdfContent(file: File): String {
             // 🔹 Use Apache Tika for additional extraction
             val tika = Tika()
             val content = tika.parseToString(file)
-            println("Tika Extracted Content:\n$content")
+            DriverManager.println("Tika Extracted Content:\n$content")
 
             // 🔹 Clean formatting (if required)
             if (text.contains("  {2,}".toRegex())) {
@@ -974,7 +1031,7 @@ fun readPdfContent(file: File): String {
             }
         }
     } catch (e: IOException) {
-        println("Error reading PDF: ${e.message}")
+        DriverManager.println("Error reading PDF: ${e.message}")
         "Error reading PDF: ${e.message}"
     }
 }
@@ -1070,7 +1127,7 @@ fun extractImagesFromPdf(file: File): List<String> {
             }
         }
     } catch (e: IOException) {
-        println("Error extracting images: ${e.message}")
+        DriverManager.println("Error extracting images: ${e.message}")
     }
     return imagePaths
 }
@@ -1094,7 +1151,7 @@ fun runTesseractOCR(imageFile: File): String {
         tesseract.setLanguage("eng")
         tesseract.doOCR(imageFile)
     } catch (e: TesseractException) {
-        println("OCR Error: ${e.message}")
+        DriverManager.println("OCR Error: ${e.message}")
         "OCR_FAILED"
     }
 }
