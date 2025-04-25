@@ -55,8 +55,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
             implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-            implementation("net.sourceforge.tess4j:tess4j:5.8.0")  // Tesseract OCR for Java
-            implementation("org.slf4j:slf4j-simple:2.0.12")      // Required by Tess4J
+//            implementation("net.sourceforge.tess4j:tess4j:5.8.0")  // Tesseract OCR for Java
+//            implementation("org.slf4j:slf4j-simple:2.0.12")      // Required by Tess4J
             implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
             implementation("org.apache.pdfbox:pdfbox:2.0.27")// For PDF files
             implementation("org.apache.commons:commons-io:1.3.2")
@@ -113,11 +113,16 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "com.tanveer.kotlinproject.MainKt"
+        jvmArgs += listOf("-Xmx2g", "-Dfile.encoding=UTF-8")
 
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.tanveer.kotlinproject"
             packageVersion = "1.0.0"
+
+            // Corrected jvmArgs configuration
+            modules("java.sql", "java.desktop")
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("lib"))
         }
     }
 }

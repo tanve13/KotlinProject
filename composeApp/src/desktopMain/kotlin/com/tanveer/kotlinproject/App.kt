@@ -61,8 +61,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.tanveer.kotlinproject.saveEvaluationToFireStore
 import io.ktor.utils.io.core.use
-import net.sourceforge.tess4j.Tesseract
-import net.sourceforge.tess4j.TesseractException
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -96,8 +94,6 @@ import javax.swing.UIManager
 import javax.swing.UIManager.put
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-
-
 
 @Composable
 @Preview
@@ -1133,28 +1129,28 @@ fun extractImagesFromPdf(file: File): List<String> {
 }
 
 // Function to extract text from images in a PDF using OCR
-fun extractTextFromPdfWithOCR(file: File): String {
-    val images = extractImagesFromPdf(file)
-    if (images.isEmpty()) return readPdfContent(file)
-    val text = StringBuilder()
-    images.forEach { imagePath ->
-        text.append(runTesseractOCR(File(imagePath)))
-    }
-    return text.toString()
-}
-
+//fun extractTextFromPdfWithOCR(file: File): String {
+//    val images = extractImagesFromPdf(file)
+//    if (images.isEmpty()) return readPdfContent(file)
+//    val text = StringBuilder()
+//    images.forEach { imagePath ->
+//        text.append(runTesseractOCR(File(imagePath)))
+//    }
+//    return text.toString()
+//}
+//
 // Function to run OCR using Tesseract
-fun runTesseractOCR(imageFile: File): String {
-    return try {
-        val tesseract = Tesseract()
-        tesseract.setDatapath("path/to/tessdata")
-        tesseract.setLanguage("eng")
-        tesseract.doOCR(imageFile)
-    } catch (e: TesseractException) {
-        DriverManager.println("OCR Error: ${e.message}")
-        "OCR_FAILED"
-    }
-}
+//fun runTesseractOCR(imageFile: File): String {
+//    return try {
+//        val tesseract = Tesseract()
+//        tesseract.setDatapath("path/to/tessdata")
+//        tesseract.setLanguage("eng")
+//        tesseract.doOCR(imageFile)
+//    } catch (e: TesseractException) {
+//        DriverManager.println("OCR Error: ${e.message}")
+//        "OCR_FAILED"
+//    }
+//}
 
 fun parseExcelRubric(file: File): String {
     return try {
