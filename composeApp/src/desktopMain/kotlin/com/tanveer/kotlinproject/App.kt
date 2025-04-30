@@ -1128,30 +1128,6 @@ fun extractImagesFromPdf(file: File): List<String> {
     return imagePaths
 }
 
-// Function to extract text from images in a PDF using OCR
-//fun extractTextFromPdfWithOCR(file: File): String {
-//    val images = extractImagesFromPdf(file)
-//    if (images.isEmpty()) return readPdfContent(file)
-//    val text = StringBuilder()
-//    images.forEach { imagePath ->
-//        text.append(runTesseractOCR(File(imagePath)))
-//    }
-//    return text.toString()
-//}
-//
-// Function to run OCR using Tesseract
-//fun runTesseractOCR(imageFile: File): String {
-//    return try {
-//        val tesseract = Tesseract()
-//        tesseract.setDatapath("path/to/tessdata")
-//        tesseract.setLanguage("eng")
-//        tesseract.doOCR(imageFile)
-//    } catch (e: TesseractException) {
-//        DriverManager.println("OCR Error: ${e.message}")
-//        "OCR_FAILED"
-//    }
-//}
-
 fun parseExcelRubric(file: File): String {
     return try {
         FileInputStream(file).use { fis ->

@@ -55,8 +55,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
             implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-//            implementation("net.sourceforge.tess4j:tess4j:5.8.0")  // Tesseract OCR for Java
-//            implementation("org.slf4j:slf4j-simple:2.0.12")      // Required by Tess4J
             implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
             implementation("org.apache.pdfbox:pdfbox:2.0.27")// For PDF files
             implementation("org.apache.commons:commons-io:1.3.2")
@@ -65,7 +63,6 @@ kotlin {
             implementation("org.apache.logging.log4j:log4j-core:2.20.0")
             implementation("org.apache.logging.log4j:log4j-api:2.20.0")
             implementation ("com.google.code.gson:gson:2.10")
-//            implementation("com.google.ai.client.generativeai:generativeai:0.6.0") // Gemini AI
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") // Coroutines
             implementation("io.ktor:ktor-client-core:2.0.0") // HTTP client for API calls
             implementation("io.ktor:ktor-client-cio:2.0.0")
@@ -117,12 +114,23 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.tanveer.kotlinproject"
+            packageName = "EduMark-AI"
             packageVersion = "1.0.0"
 
             // Corrected jvmArgs configuration
-            modules("java.sql", "java.desktop")
-            appResourcesRootDir.set(project.layout.projectDirectory.dir("lib"))
+            modules("java.sql", "java.desktop", "jdk.unsupported")
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("resources"))
+
+            // Windows configuration
+            windows {
+                menuGroup = "Edumark AI"
+                upgradeUuid = "5a3b1f00-2b7d-4a50-9f5a-5d0d9d9d9d9d"
+//                iconFile.set(project.file("icon.ico"))
+            }
+            // Bundle JVM with application
+            includeAllModules = true
+            jvmArgs += "--add-opens=java.base/java.lang=ALL-UNNAMED"
+
         }
     }
 }
