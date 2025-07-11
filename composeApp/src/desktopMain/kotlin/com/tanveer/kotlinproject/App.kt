@@ -815,12 +815,12 @@ fun evaluateAnswerSheet(
         .readTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
+    val apiKey = "AIzaSyBMz9mctXP9l_XgOZJTgZoNvmuMbK52Qfk"
     val url =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
 
-    val truncatedRubric = parsedRubric.take(100000)
-    val truncatedAnswer = answerSheet.take(1000000)
+    val truncatedRubric = parsedRubric.take(30000)
+    val truncatedAnswer = answerSheet.take(150000)
     val truncatedQuestionPaper = questionPaper.take(500000)
 
     val prompt = createEvaluationPrompt(truncatedQuestionPaper, truncatedRubric, truncatedAnswer)
@@ -839,7 +839,7 @@ fun evaluateAnswerSheet(
             put("temperature", 0.0)
             put("topP", 0.8)
             put("topK", 40)
-            put("maxOutputTokens", 4096)
+            put("maxOutputTokens", 8192)
             put("responseMimeType", "application/json")
         })
         put("safetySettings", JSONArray().apply {
@@ -882,7 +882,7 @@ fun evaluateAnswerSheet(
                 val parts = candidates.getJSONObject(0)
                     .optJSONObject("content")
                     ?.optJSONArray("parts")
-
+//////////////////////////////check this [part     ///////////&&&&&&&&&&&&&&&&&&&&&&&&&&
                 val text = parts?.optJSONObject(0)?.optString("text") ?: ""
 //                try {
 //                    val json = JSONObject(text)
@@ -945,7 +945,9 @@ fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: S
         STUDENT ANSWER:
         ${answerSheet.ifBlank { "ANSWER SHEET NOT PROVIDED" }}
 
-        RESPONSE FORMAT:
+        RESPONSE FORMAT: You MUST output ONLY a JSON object in the following format. 
+        DO NOT INCLUDE ANY MARKDOWN, COMMENTS, OR EXTRA TEXT.
+        Start with '{' and end with '}'.
         {
             "overall_score": "X/Y",
             "section_wise": [
